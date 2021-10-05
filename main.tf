@@ -15,13 +15,19 @@ provider "azurerm" {
   subscription_id = "d94fe338-52d8-4a44-acd4-4f8301adf2cf"
 }
 
+locals {
+  rg_name = "targil_rg"
+  rg_location = "West Europe"
+  module_source_vnet_and_vm = "./modules/vnet_with_vm"
+}
+
 resource "azurerm_resource_group" "targil_rg" {
-  name     = "targil_rg"
-  location = "West Europe"
+  name     = local.rg_name
+  location = local.rg_location
 }
 
 module "vnet_and_vm1" {
-  source = "./modules/vnet_with_vm"
+  source = local.module_source_vnet_and_vm
 
   rg_name  = azurerm_resource_group.targil_rg.name
   location = azurerm_resource_group.targil_rg.location
@@ -39,7 +45,7 @@ module "vnet_and_vm1" {
 }
 
 module "vnet_and_vm2" {
-  source = "./modules/vnet_with_vm"
+  source = local.module_source_vnet_and_vm
 
   rg_name  = azurerm_resource_group.targil_rg.name
   location = azurerm_resource_group.targil_rg.location
