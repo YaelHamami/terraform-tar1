@@ -1,3 +1,12 @@
+locals {
+  id_conf_name = "testconfiguration1"
+  vm_size = "Standard_B2s"
+  disk_caching = "ReadWrite"
+  disk_name ="myosdisk${var.vm_name}"
+  admin_username = "testadmin"
+  admin_password = "Password1234!"
+}
+
 resource "azurerm_virtual_network" "sample_vnet" {
   name                = var.vnet_name
   address_space       = [var.vnet_address]
@@ -25,7 +34,7 @@ resource "azurerm_network_interface" "sample_nic" {
   resource_group_name = var.rg_name
 
   ip_configuration {
-    name                          = "testconfiguration1"
+    name                          = local.id_conf_name
     subnet_id                     = azurerm_subnet.sample_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.sample_public_ip.id
@@ -38,7 +47,7 @@ resource "azurerm_linux_virtual_machine" "sample_vm" {
   location              = var.location
   resource_group_name   = var.rg_name
   network_interface_ids = [azurerm_network_interface.sample_nic.id]
-  size                  = "Standard_B2s"
+  size                  = local.vm_size
 
   source_image_reference {
     publisher = "Canonical"
@@ -48,12 +57,12 @@ resource "azurerm_linux_virtual_machine" "sample_vm" {
   }
 
   os_disk {
-    name                 = "myosdisk${var.vm_name}"
-    caching              = "ReadWrite"
+    name                 = local.disk_caching
+    caching              = local.disk_caching
     storage_account_type = "Standard_LRS"
   }
 
-  admin_username                  = "testadmin"
-  admin_password                  = "Password1234!"
+  admin_username                  = local.admin_username
+  admin_password                  = local.admin_password
   disable_password_authentication = false
 }
